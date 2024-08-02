@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Roll Number</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #jsonInput {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+        #submitBtn {
+            width: 100%;
+            padding: 10px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #multiFilter {
+            margin-top: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+        #response {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>Sample Output:</h2>
+    <input type="text" id="jsonInput" value='{"data":["M","1","334","4","B"]}'>
+    <button id="submitBtn">Submit</button>
+    <div id="error" class="error"></div>
+    
+    <div id="multiFilter">
+        Multi Filter
+        <label><input type="checkbox" name="filter" value="numbers"> Numbers</label>
+        <label><input type="checkbox" name="filter" value="highestAlphabet"> Highest Alphabet</label>
+    </div>
+    
+    <div id="response"></div>
+
+    <script>
+        const jsonInput = document.getElementById('jsonInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDiv = document.getElementById('error');
+        const multiFilter = document.getElementById('multiFilter');
+        const responseDiv = document.getElementById('response');
+
+        submitBtn.addEventListener('click', async () => {
+            try {
+                const inputData = JSON.parse(jsonInput.value);
+                errorDiv.textContent = '';
+                
+                // Simulating API call and response
+                const data = processData(inputData.data);
+                
+                // Show multi-filter checkboxes
+                multiFilter.style.display = 'block';
+                
+                // Update response based on checkboxes
+                updateResponse(data);
+                
+                multiFilter.addEventListener('change', () => updateResponse(data));
+            } catch (error) {
+                errorDiv.textContent = 'Invalid JSON input';
+            }
+        });
+
+        function processData(data) {
+            const numbers = data.filter(item => !isNaN(item)).join(',');
+            const highestAlphabet = data.filter(item => isNaN(item)).sort().pop();
+            return { numbers, highestAlphabet };
+        }
+
+        function updateResponse(data) {
+            const selected = Array.from(document.querySelectorAll('input[name="filter"]:checked')).map(checkbox => checkbox.value);
+            let output = 'Filtered Response\n';
+            
+            if (selected.includes('numbers')) {
+                output += `Numbers: ${data.numbers}\n`;
+            }
+            if (selected.includes('highestAlphabet')) {
+                output += `Highest Alphabet: ${data.highestAlphabet}\n`;
+            }
+            
+            responseDiv.textContent = output;
+        }
+    </script>
+</body>
+</html>
